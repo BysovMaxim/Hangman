@@ -1,0 +1,37 @@
+*, *::after, *::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding:  0;
+}
+
+body {
+  background-color: #454545;
+  color:  #fff;
+}
+
+.container {
+  max-width:  1200px;
+  margin: 0 auto;
+  text-align:  center;
+  padding-top:  150px;
+}
+
+.clue {
+  visibility: hidden;
+}
+
+ button {
+  font-size:  18px;
+  padding: 10px;
+  margin: 5px;
+  color:  #fff;
+  background-color: #252525;
+  border: 1px solid #fff;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+p {
+  margin: 15px 0;
+  font-size:  25px;
+}
