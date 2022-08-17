@@ -55,9 +55,9 @@ window.onload = function() {
 
   function getRandomCategory(obj) {
     let arr = []
-    let catValue = Object.keys(obj)[Math.floor(Math.random() * (Object.keys(obj).length))] // films
+    let catValue = Object.keys(obj)[Math.floor(Math.random() * (Object.keys(obj).length))] // Films
     let word = Object.keys(obj[catValue])[Math.floor(Math.random() * (Object.keys(obj[catValue]).length))] // Lion King
-    let clue = Object.values(obj[catValue][word]).toString() // from which one was lion named Simba?
+    let clue = Object.values(obj[catValue][word]).toString() // In which movie is the lion named Simba?
     arr.push(catValue, word, clue)
     console.log(arr)
     return arr;
