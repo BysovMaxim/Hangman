@@ -56,7 +56,8 @@ window.onload = function() {
   const restart = document.querySelector('.restart')
   const lives = document.querySelector('.lives-remaining')
   const word = document.querySelector('.word')
-  
+  let guesses = []
+  let len = 0
   let arr = []
   let livesCount = 10
   
@@ -109,24 +110,39 @@ window.onload = function() {
   })
 
   const letterButtons = document.querySelectorAll('.letter')
-
+  if(mainWord.split('').includes(' ')) len++
   letterButtons.forEach(button => {
     button.addEventListener('click', (e) => {
-      let target = e.target;
-      console.log(livesCount)
-        if(livesCount <= 0) {
-          lives.innerHTML = 'GAME OVER!!!'
-          return
-        }
-      if (mainWord.toLowerCase().split('').includes(target.innerHTML)) {
 
+      let target = e.target;
+
+      if(guesses.includes(target.innerHTML)) return
+      if(livesCount <= 0) {
+        lives.innerHTML = 'GAME OVER!!!'
+        return
+      }
+      if(lives.innerHTML == 'YOU WON!!!') {
+        return
+      }
+
+      if (mainWord.toLowerCase().split('').includes(target.innerHTML)) {
+        target.classList.add('guess-green')
+        
         for(let i = 0; i < mainWord.length; i++ ) {
           if(mainWord.toLowerCase().split('')[i] == target.innerHTML) {
             spans[i].innerHTML = target.innerHTML
-          } 
+            len++
+            if(len == mainWord.split('').length) {
+              lives.innerHTML = 'YOU WON!!!'
+              return
+            }
+          }
         }
 
+
       } else {
+          guesses.push(target.innerHTML)
+          target.classList.add('guess-red')
           livesCount--
           lives.innerHTML = `You have ${livesCount} lives`
       }
