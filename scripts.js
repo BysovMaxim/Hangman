@@ -51,24 +51,41 @@ window.onload = function() {
 
   const letters = document.querySelector('.letters')
   const chosenCategory = document.querySelector('.chosen-category')
-  const takenCategory = getRandomCategory(category)
+  const clue = document.querySelector('.clue')
+  const hint = document.querySelector('.hint')
+  const restart = document.querySelector('.restart')
+  const lives = document.querySelector('.lives-remaining')
+  const word = document.querySelector('.word')
+  let arr = []
+  let livesCount = 10
 
   function getRandomCategory(obj) {
-    let arr = []
     let catValue = Object.keys(obj)[Math.floor(Math.random() * (Object.keys(obj).length))] // Films
     let word = Object.keys(obj[catValue])[Math.floor(Math.random() * (Object.keys(obj[catValue]).length))] // Lion King
     let clue = Object.values(obj[catValue][word]).toString() // In which movie is the lion named Simba?
     arr.push(catValue, word, clue)
-    console.log(arr)
-    return arr;
-
   }
 
+  function updateDisplay() {
+    chosenCategory.innerHTML += arr[0] + '!'
+    clue.innerHTML = arr[2]
+    lives.innerHTML = `You have ${livesCount} lives`
+  }
 
-  chosenCategory.innerHTML += takenCategory[0] + '!'
+  getRandomCategory(category)
+  updateDisplay()
   
+  hint.addEventListener('click', () => {
+    clue.style.visibility = 'visible'
+  })
 
-
+  restart.addEventListener('click', () => {
+    arr = []
+    getRandomCategory(category)
+    chosenCategory.innerHTML = 'Randomly chosen category now is - '
+    updateDisplay()
+    clue.style.visibility = 'hidden'
+  })
 
   alphabet.forEach(letter => {
     letters.innerHTML += `<button class="letter">${letter}</button>`
