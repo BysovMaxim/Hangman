@@ -7,6 +7,7 @@
 body {
   background-color: #454545;
   color:  #fff;
+  font-size:  30px;
 }
 
 .container {
@@ -16,42 +17,27 @@ body {
   padding-top:  150px;
 }
 
-.clue {
-  visibility: hidden;
-}
-
-button {
-  font-size:  30px;
-  padding: 22px;
-  margin: 5px;
-  color:  #fff;
-  background-color: #252525;
-  border: 1px solid #fff;
-  border-radius: 2px;
-  cursor: pointer;
-}
-
-button:hover {
-  color: #252525;
-  background-color: #fff;
-}
-
-.guess-green {
-  background-color: green;
-  color: #fff;
-}
-
-.guess-red {
-  background-color: red;
-  color: #fff;
-}
 
 p {
   margin: 15px 0;
   font-size:  25px;
 }
 
+span {
+  padding:  0 5px;
+}
 
-.word span {
-  padding:  10px;
+.alphabet-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.letters {
+  padding:  15px;
+  margin: 2px;
+}
+
+.letters:hover {
+  background-color: #757575;
 }

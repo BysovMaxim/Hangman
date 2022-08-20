@@ -1,10 +1,10 @@
-window.onload = function() {
-  
-  const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-        't', 'u', 'v', 'w', 'x', 'y', 'z'];
-
-  const category = {
+const alphabetContainer = document.querySelector('.alphabet-container')
+const wordContainer = document.querySelector('.word-container')
+const controls = document.querySelector('.controls')
+const category = document.querySelector('.category')
+const hintContainer = document.querySelector('.hint-container')
+const canvas = document.getElementById("canvas")
+const categories = {
     films : {
       ['Jaws'] : {
         clueText : 'famous film about sharks'
@@ -16,6 +16,9 @@ window.onload = function() {
 
       ['Lion King'] : {
         clueText : 'from which one was lion named Simba?'
+      },
+      ['One Flew Over the Cuckoos Nest'] : {
+        clueText : 'A criminal pleads insanity and is admitted to a mental institution, where he rebels against the oppressive nurse and rallies up the scared patients.'
       }
     },
 
@@ -44,108 +47,200 @@ window.onload = function() {
 
     actresses : {
       ['Margot Robbie'] : {
-        clueText : 'one of the sexiest acress of 21 century'
+        clueText : 'one of the sexiest actress of 21 century'
       }
     }
   }
+let winCount = 0
+let loseCount = 0
+let chosenWord = '';
+let hint = ''
 
-  const letters = document.querySelector('.letters')
-  const chosenCategory = document.querySelector('.chosen-category')
-  const clueText = document.querySelector('.clue')
-  const hintButton = document.querySelector('.hint')
-  const restart = document.querySelector('.restart')
-  const lives = document.querySelector('.lives-remaining')
-  const word = document.querySelector('.word')
-  let guesses = []
-  let len = 0
-  let arr = []
-  let livesCount = 10
-  
+// blocks all buttons
 
-
-  function getRandomCategory(obj) {
-    let catValue = Object.keys(obj)[Math.floor(Math.random() * (Object.keys(obj).length))] // Films
-    let word = Object.keys(obj[catValue])[Math.floor(Math.random() * (Object.keys(obj[catValue]).length))] // Lion King
-    let clueText = Object.values(obj[catValue][word]).toString() // In which movie is the lion named Simba?
-    arr.push(catValue, word, clueText)
-  }
-
-  function updateDisplay() {
-    chosenCategory.innerHTML += arr[0] + '!'
-    clueText.innerHTML = arr[2]
-    lives.innerHTML = `You have ${livesCount} lives`
-  }
-
-  function drawWord() {
-    for(let i = 0; i < arr[1].length; i++) {
-      if(arr[1].split('')[i] == ' ') word.innerHTML += '<span class="symbol"> </span>'
-      else word.innerHTML += '<span class="symbol">_</span>'
-    }
-  }
-
-
-  getRandomCategory(category)
-  updateDisplay()
-  drawWord()
-
-  const spans = document.querySelectorAll('.symbol')
-  const mainWord = arr[1]
-
-  hintButton.addEventListener('click', () => {
-    clueText.style.visibility = 'visible'
-  })
-
-  restart.addEventListener('click', () => {
-    word.innerHTML = ''
-    arr = []
-    getRandomCategory(category)
-    chosenCategory.innerHTML = 'Randomly chosen category now is - '
-    drawWord()
-    updateDisplay()
-    clueText.style.visibility = 'hidden'
-  })
-
-  alphabet.forEach(letter => {
-    letters.innerHTML += `<button class="letter">${letter}</button>`
-  })
-
-  const letterButtons = document.querySelectorAll('.letter')
-  if(mainWord.split('').includes(' ')) len++
-  letterButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-
-      let target = e.target;
-
-      if(guesses.includes(target.innerHTML)) return
-      if(livesCount <= 0) {
-        lives.innerHTML = 'GAME OVER!!!'
-        return
-      }
-      if(lives.innerHTML == 'YOU WON!!!') {
-        return
-      }
-
-      if (mainWord.toLowerCase().split('').includes(target.innerHTML)) {
-        target.classList.add('guess-green')
-        
-        for(let i = 0; i < mainWord.length; i++ ) {
-          if(mainWord.toLowerCase().split('')[i] == target.innerHTML) {
-            spans[i].innerHTML = target.innerHTML
-            len++
-            if(len == mainWord.split('').length) {
-              lives.innerHTML = 'YOU WON!!!'
-              return
-            }
-          }
-        }
-
-
-      } else {
-          guesses.push(target.innerHTML)
-          target.classList.add('guess-red')
-          livesCount--
-          lives.innerHTML = `You have ${livesCount} lives`
-      }
-    })
+const changeStateButtons = (disabled) => {
+  let letters = document.querySelectorAll('.letters')
+  letters.forEach(letter => {
+    letter.disabled = disabled
   })
 }
+
+//Canvas
+const canvasCreator = () => {
+  let context = canvas.getContext("2d");
+  context.beginPath();
+  context.strokeStyle = "#000";
+  context.lineWidth = 2;
+
+  //For drawing lines
+  const drawLine = (fromX, fromY, toX, toY) => {
+    context.moveTo(fromX, fromY);
+    context.lineTo(toX, toY);
+    context.stroke();
+  };
+
+  const head = () => {
+    context.beginPath();
+    context.arc(70, 30, 10, 0, Math.PI * 2, true);
+    context.stroke();
+  };
+
+  const body = () => {
+    drawLine(70, 40, 70, 80);
+  };
+
+  const leftArm = () => {
+    drawLine(70, 50, 50, 70);
+  };
+
+  const rightArm = () => {
+    drawLine(70, 50, 90, 70);
+  };
+
+  const leftLeg = () => {
+    drawLine(70, 80, 50, 110);
+  };
+
+  const rightLeg = () => {
+    drawLine(70, 80, 90, 110);
+  };
+
+  //initial frame
+  const initialDrawing = () => {
+    //clear canvas
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+    //bottom line
+    drawLine(10, 130, 130, 130)
+    //left line
+    drawLine(10, 10, 10, 131)
+    //top line
+    drawLine(10, 10, 70, 10)
+    //small top line
+    drawLine(70, 10, 70, 20)
+  };
+
+  return { initialDrawing, head, body, leftArm, rightArm, leftLeg, rightLeg }
+};
+
+// create menu with some buttons
+const createMenu = () => {
+  let gameRestart = document.createElement('button')
+  let getHint = document.createElement('button')
+  gameRestart.innerHTML = 'Play again!'
+  getHint.innerHTML = 'Get a hint!'
+  controls.append(getHint)
+  controls.append(gameRestart)
+
+  gameRestart.addEventListener('click', () => {
+    // clearing some info
+    let result = document.querySelector('.result')
+    winCount = 0
+    loseCount = 0
+    if(result) result.innerHTML = ''
+    hintContainer.innerHTML = ''
+    let { initialDrawing } = canvasCreator()
+    //initialDrawing would draw the frame
+    initialDrawing()
+    changeStateButtons(false)
+    generateWord()
+  })
+  getHint.addEventListener('click', () => {
+    hintContainer.innerHTML = hint
+  })
+
+
+
+}
+
+// word generator
+const generateWord = () => {
+  // choose category randomly
+  let randomedCategory = Object.keys(categories)[Math.floor(Math.random() * Object.keys(categories).length)]
+  console.log(randomedCategory)
+  category.innerHTML = randomedCategory
+  // choose word randomly
+  chosenWord = Object.keys(categories[randomedCategory])[Math.floor(Math.random() * Object.keys(categories[randomedCategory]).length)]
+  console.log(chosenWord)
+  hint = Object.values(categories[randomedCategory][chosenWord]).toString()
+  console.log(hint)
+  chosenWord = chosenWord.toUpperCase()
+  let dashedWord = ''
+  // deleting spaces between words
+  for(let i = 0; i < chosenWord.split('').length; i++) {
+    if(chosenWord.split('')[i] != ' ') dashedWord += '<span class="dash">_</span>'
+      else dashedWord += '<span class="space"> </span>'
+  }
+  wordContainer.innerHTML = dashedWord
+
+}
+
+// main game logic, initialize
+
+const initialize = () => {
+  winCount = 0
+  loseCount = 0
+  for(let i = 65; i < 91; i++) {
+    let button = document.createElement('button')
+    button.classList.add('letters')
+    button.innerHTML = `${String.fromCodePoint(i)}`
+    button.addEventListener('click', () => {
+      let charArray = chosenWord.replace(/ /g, '').split('')
+      let dashes = document.getElementsByClassName('dash')
+      if(charArray.includes(button.innerHTML)) {
+        charArray.forEach((char, index) => {
+          if(char === button.innerHTML) {
+            dashes[index].innerHTML = char.toLowerCase()
+            winCount++
+            if(winCount == charArray.length) {
+              let result = document.createElement('div')
+              result.innerHTML = '<h2 class="result">You won!!!</h2>'
+              wordContainer.after(result)
+              changeStateButtons(true)
+            }
+          }
+        })
+      } else {
+            loseCount++
+            drawMan(loseCount);
+            if(loseCount > 5) {
+              let result = document.createElement('div')
+              result.innerHTML = '<h2 class="result">You lost!!!</h2>'
+              wordContainer.after(result)
+              changeStateButtons(true)
+            }
+      }
+      button.disabled = true
+    })
+
+    alphabetContainer.append(button)
+  }
+
+}
+const drawMan = (loseCount) => {
+  let { head, body, leftArm, rightArm, leftLeg, rightLeg } = canvasCreator();
+  switch (loseCount) {
+    case 1:
+      head();
+      break;
+    case 2:
+      body();
+      break;
+    case 3:
+      leftArm();
+      break;
+    case 4:
+      rightArm();
+      break;
+    case 5:
+      leftLeg();
+      break;
+    case 6:
+      rightLeg();
+      break;
+    default:
+      break;
+  }
+};
+generateWord()
+createMenu()
+window.onload = initialize
